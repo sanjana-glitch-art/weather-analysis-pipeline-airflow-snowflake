@@ -40,8 +40,7 @@ Two separate pipelines handle the two stages of work. The first pipeline runs at
     │   ├── report.pdf
     │
     ├── config/
-    │   ├── sample_airflow_variables.json
-    │   ├── sample_airflow_connection.md
+    │   ├── airflow_variables.json
     │
     └── README.md
 
