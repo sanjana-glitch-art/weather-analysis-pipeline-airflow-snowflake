@@ -2,7 +2,17 @@
 
 An automated, production‑style data engineering and forecasting pipeline that ingests historical weather data from the Open‑Meteo API, loads it into Snowflake using an ETL workflow orchestrated by Apache Airflow, and generates 7‑day temperature forecasts using Snowflake ML Forecast. The system processes four U.S. cities: Newport Beach, Boston, Seattle, and Miami.
 
-Powered by Snowflake ML · Apache Airflow · Open-Meteo API
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Apache_Airflow-2.10.1-017CEE?style=flat-square&logo=apacheairflow&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Snowflake-ML_Forecast-29B5E8?style=flat-square&logo=snowflake&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Open--Meteo-Free_API-00C7B7?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Status-Active-22c55e?style=flat-square"/>
+</p>
+
+<p align="center">
+  <img src="screenshots/weather_architecture_original.png" alt="System Architecture" width="100%"/>
+</p>
 
 # Table of Contents
 Overview
