@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.decorators import task
 from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
+
 from datetime import datetime, timedelta
 import requests
 
@@ -12,13 +13,16 @@ default_args = {
     "retry_delay": timedelta(minutes=3),
 }
 
-# Snowflake Connection Helper
+
 def return_snowflake_conn(conn_id):
     hook = SnowflakeHook(snowflake_conn_id=conn_id)
     conn = hook.get_conn()
     return conn.cursor()
 
+
+# -------------------------
 # EXTRACT
+# -------------------------
 @task
 def extract(latitude, longitude):
 
@@ -39,7 +43,7 @@ def extract(latitude, longitude):
         ],
         "timezone": "America/Los_Angeles"
     }
-    # makes an API call 
+
     response = requests.get(url, params=params)
 
     if response.status_code != 200:
@@ -47,7 +51,10 @@ def extract(latitude, longitude):
 
     return response.json()
 
+
+# -------------------------
 # TRANSFORM
+# -------------------------
 @task
 def transform(raw_data, latitude, longitude, city):
 
@@ -73,7 +80,9 @@ def transform(raw_data, latitude, longitude, city):
     return records
 
 
+# -------------------------
 # LOAD (UPSERT)
+# -------------------------
 @task
 def load(records, target_table):
 
@@ -159,19 +168,23 @@ def load(records, target_table):
         """)
 
         cur.execute("COMMIT")
+
         print("UPSERT SUCCESS")
 
     except Exception as e:
+
         cur.execute("ROLLBACK")
         raise e
 
 
+# -------------------------
 # DAG
+# -------------------------
 with DAG(
     dag_id="WeatherData_ETL",
     start_date=datetime(2026, 3, 2),
-    schedule="30 2 * * *", # RUNDS DAILY AT 2:30 AM
-    catchup=False, # No backfilling 
+    schedule="30 2 * * *",
+    catchup=False,
     tags=["ETL"],
     default_args=default_args
 ) as dag:
@@ -183,6 +196,7 @@ with DAG(
     for city in cities:
 
         raw = extract(city["lat"], city["lon"])
+
         transformed = transform(
             raw,
             city["lat"],
