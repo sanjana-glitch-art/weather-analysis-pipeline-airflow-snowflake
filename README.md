@@ -2,6 +2,8 @@
 
 An automated, production‑style data engineering and forecasting pipeline that ingests historical weather data from the Open‑Meteo API, loads it into Snowflake using an ETL workflow orchestrated by Apache Airflow, and generates 7‑day temperature forecasts using Snowflake ML Forecast. The system processes four U.S. cities: Newport Beach, Boston, Seattle, and Miami.
 
+### Automated ETL · Snowflake ML Forecasting · Apache Airflow Orchestration
+
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white"/>
   <img src="https://img.shields.io/badge/Apache_Airflow-2.10.1-017CEE?style=flat-square&logo=apacheairflow&logoColor=white"/>
@@ -10,46 +12,21 @@ An automated, production‑style data engineering and forecasting pipeline that 
   <img src="https://img.shields.io/badge/Status-Active-22c55e?style=flat-square"/>
 </p>
 
-<p align="center">
-  <img src="screenshots/weather_architecture_original.png" alt="System Architecture" width="100%"/>
-</p>
+## What This Project Does
 
-# Table of Contents
-Overview
-System Architecture
-Cities Tracked
-Project Structure
-Pipeline 1 — Weather ETL DAG
-Pipeline 2 — Train & Predict DAG
-Snowflake Schema & Tables
-Airflow Setup
-Screenshots
-Key SQL Queries
-Results & Forecast Output
-Lessons Learned
+This system ingests 60 days of real historical weather data from four US cities, stores it in Snowflake, and uses Snowflake's native machine learning engine to generate a 7-day temperature forecast — all running on a fully automated daily schedule through Apache Airflow.
 
-# OVERVIEW
-This project demonstrates a complete cloud‑based data engineering workflow:
-- Automated ETL pipeline (Extract → Transform → Load)
-- Automated ML forecasting pipeline
-- Snowflake as the central data warehouse
-- Airflow for orchestration and scheduling
-- Open‑Meteo API as the data source
-- Unified analytics table combining historical and forecasted weather metrics
-The architecture is modular, scalable, and designed to mirror real‑world data engineering systems.
+Two separate pipelines handle the two stages of work. The first pipeline runs at **02:30 UTC** and handles data collection, transformation, and storage. The second runs one hour later at **03:30 UTC**, trains the forecasting model on fresh data, generates predictions, and assembles the final output table that places historical actuals and future forecasts side by side.
 
 # REPO STRUCTURE
     weather-analytics-pipeline-airflow-snowflake/
     │
     ├── dags/
-    │   ├── weather_etl_pipeline.py
-    │   ├── weather_prediction.py
+    │   ├── weather_etl_pipeline.py  ← Airflow DAG 1: data collection & storage
+    │   ├── weather_prediction.py    ← Airflow DAG 2: ML training & forecasting
     │
     ├── sql/
-    │   ├── create_raw_table.sql
-    │   ├── create_forecast_table.sql
-    │   ├── create_final_table.sql
-    │   ├── create_metrics_table.sql
+    │   ├── snowflake.sql            ← All DDL, setup queries & analysis SQL
     │
     ├── docs/
     │   ├── architecture-diagram.png
@@ -93,11 +70,12 @@ The architecture is modular, scalable, and designed to mirror real‑world data 
     └────────────────────────────────────────────────────────────────┘
 
 # Cities Tracked
-City	Latitude	Longitude	State
-Miami	25.7617	-80.1918	Florida
-Newport Beach	33.6189	-117.9289	California
-Seattle	47.6062	-122.3321	Washington
-Boston	42.3601	-71.0589	Massachusetts
+| # | City | State | Latitude | Longitude | Climate |
+|---|------|-------|----------|-----------|---------|
+| 1 | Miami | Florida | 25.7617° N | 80.1918° W | Tropical |
+| 2 | Newport Beach | California | 33.6189° N | 117.9289° W | Mediterranean |
+| 3 | Seattle | Washington | 47.6062° N | 122.3321° W | Oceanic |
+| 4 | Boston | Massachusetts | 42.3601° N | 71.0589° W | Continental |
 
 # Pipeline 1 — Weather ETL DAG
 **DAG ID:** WeatherData_ETL
