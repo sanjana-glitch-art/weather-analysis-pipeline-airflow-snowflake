@@ -13,14 +13,11 @@ default_args = {
     "retry_delay": timedelta(minutes=3),
 }
 
-
 def return_snowflake_conn(conn_id):
     hook = SnowflakeHook(snowflake_conn_id=conn_id)
     conn = hook.get_conn()
     return conn.cursor()
 
-
-# -------------------------
 # EXTRACT
 # -------------------------
 @task
@@ -51,8 +48,6 @@ def extract(latitude, longitude):
 
     return response.json()
 
-
-# -------------------------
 # TRANSFORM
 # -------------------------
 @task
@@ -79,8 +74,6 @@ def transform(raw_data, latitude, longitude, city):
 
     return records
 
-
-# -------------------------
 # LOAD (UPSERT)
 # -------------------------
 @task
@@ -176,8 +169,6 @@ def load(records, target_table):
         cur.execute("ROLLBACK")
         raise e
 
-
-# -------------------------
 # DAG
 # -------------------------
 with DAG(
