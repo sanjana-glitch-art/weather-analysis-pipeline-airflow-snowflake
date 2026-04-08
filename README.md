@@ -1,7 +1,4 @@
-# Weather-Analysis-Pipeline-Airflow-Snowflake
-
-An automated, production‑style data engineering and forecasting pipeline that ingests historical weather data from the Open‑Meteo API, loads it into Snowflake using an ETL workflow orchestrated by Apache Airflow, and generates 7‑day temperature forecasts using Snowflake ML Forecast. The system processes four U.S. cities: Newport Beach, Boston, Seattle, and Miami.
-
+# 🌤️ Weather Prediction Analytics System
 ### Automated ETL · Snowflake ML Forecasting · Apache Airflow Orchestration
 
 <p align="center">
@@ -12,63 +9,40 @@ An automated, production‑style data engineering and forecasting pipeline that 
   <img src="https://img.shields.io/badge/Status-Active-22c55e?style=flat-square"/>
 </p>
 
-## What This Project Does
+<p align="center">
+  <img src="screenshots/weather_architecture_original.png" alt="System Architecture" width="100%"/>
+</p>
+
+---
+
+## 📖 What This Project Does
 
 This system ingests 60 days of real historical weather data from four US cities, stores it in Snowflake, and uses Snowflake's native machine learning engine to generate a 7-day temperature forecast — all running on a fully automated daily schedule through Apache Airflow.
 
 Two separate pipelines handle the two stages of work. The first pipeline runs at **02:30 UTC** and handles data collection, transformation, and storage. The second runs one hour later at **03:30 UTC**, trains the forecasting model on fresh data, generates predictions, and assembles the final output table that places historical actuals and future forecasts side by side.
 
-# REPO STRUCTURE
-    weather-analytics-pipeline-airflow-snowflake/
-    │
-    ├── dags/
-    │   ├── weather_etl_pipeline.py  ← Airflow DAG 1: data collection & storage
-    │   ├── weather_prediction.py    ← Airflow DAG 2: ML training & forecasting
-    │
-    ├── sql/
-    │   ├── snowflake.sql            ← All DDL, setup queries & analysis SQL
-    │
-    ├── docs/
-    │   ├── architecture-diagram.png
-    │   ├── airflow-dag-graphs/
-    │   │     ├── etl-dag.png
-    │   │     ├── ml-dag.png
-    │   ├── snowflake-screenshots/
-    │   │     ├── raw-table.png
-    │   │     ├── forecast-table.png
-    │   │     ├── final-table.png
-    │   ├── report.pdf
-    │
-    ├── config/
-    │   ├── airflow_variables.json
-    │
-    └── README.md
+---
 
-# SYSTEM ARCHITECTURE
-    ┌────────────────────────────────────────────────────────────────┐
-    │                        APACHE AIRFLOW                          │
-    │                                                                │
-    │  ┌──────────────────────────────────────────────────────────┐  │
-    │  │  DAG 1: WeatherData_ETL  (Daily @ 02:30 UTC)             │  │
-    │  │                                                          │  │
-    │  │  Open-Meteo API  →  Extract  →  Transform  →  Load       │  │
-    │  │  (4 cities, parallel tasks)        ↓                     │  │
-    │  │                              Snowflake RAW.CITY_WEATHER  │  │
-    │  └──────────────────────────────────────────────────────────┘  │
-    │                              ↓                                 │
-    │  ┌──────────────────────────────────────────────────────────┐  │
-    │  │  DAG 2: TrainPredict      (Daily @ 03:30 UTC)            │  │
-    │  │                                                          │  │
-    │  │  RAW.CITY_WEATHER  →  Train Forecast Model               │  │
-    │  │                              ↓                           │  │
-    │  │                       Predict 7 Days                     │  │
-    │  │                              ↓                           │  │
-    │  │              ANALYTICS.CITY_WEATHER_FINAL                │  │
-    │  │          (Historical UNION Forecast Results)             │  │
-    │  └──────────────────────────────────────────────────────────┘  │
-    └────────────────────────────────────────────────────────────────┘
+## 🗂️ Repository Contents
 
-# Cities Tracked
+```
+weather-prediction-analytics/
+│
+├── weather_etl_pipeline.py        ← Airflow DAG 1: data collection & storage
+├── weather_prediction.py          ← Airflow DAG 2: ML training & forecasting
+├── snowflake.sql                  ← All DDL, setup queries & analysis SQL
+├── screenshots/
+│   ├── airflow_dags_overview.png
+│   ├── airflow_etl_graph.png
+│   ├── airflow_trainpredict_graph.png
+│   └── weather_architecture_original.png
+└── README.md
+```
+
+---
+
+## 🏙️ Cities in Scope
+
 | # | City | State | Latitude | Longitude | Climate |
 |---|------|-------|----------|-----------|---------|
 | 1 | Miami | Florida | 25.7617° N | 80.1918° W | Tropical |
@@ -76,7 +50,10 @@ Two separate pipelines handle the two stages of work. The first pipeline runs at
 | 3 | Seattle | Washington | 47.6062° N | 122.3321° W | Oceanic |
 | 4 | Boston | Massachusetts | 42.3601° N | 71.0589° W | Continental |
 
-# Pipeline 1 — Weather ETL DAG
+---
+
+## ⚙️ Pipeline 1 — WeatherData_ETL
+
 **File:** `weather_etl_pipeline.py`  
 **DAG ID:** `WeatherData_ETL`  
 **Schedule:** `30 2 * * *` — daily at 02:30 UTC  
@@ -143,7 +120,7 @@ City coordinates are stored as an Airflow Variable (JSON), not hardcoded. Adding
 
 ---
 
-## Pipeline 2 — TrainPredict
+## 🤖 Pipeline 2 — TrainPredict
 
 **File:** `weather_prediction.py`  
 **DAG ID:** `TrainPredict`  
@@ -163,6 +140,7 @@ CREATE OR REPLACE SNOWFLAKE.ML.FORECAST ANALYTICS.CITY_WEATHER_FORECAST_MODEL (
     CONFIG_OBJECT     => { 'ON_ERROR': 'SKIP' }
 );
 ```
+
 After training, evaluation metrics are appended (with timestamp) to `ANALYTICS.CITY_WEATHER_MODEL_METRICS` so each run remains independently auditable.
 
 ### Task 2 — `predict()`
@@ -181,13 +159,15 @@ SELECT REPLACE(SERIES, '"', '') AS CITY,
        NULL AS ACTUAL, FORECAST, LOWER_BOUND, UPPER_BOUND
 FROM ADHOC.CITY_WEATHER_FORECAST
 ```
----
-## Snowflake Database Structure
 
-**Database:** `USER_DB_FERRET`
+---
+
+## 🗄️ Snowflake Database Structure
+
+**Database:** `USER_DB_FLAMINGO`
 
 ```
-USER_DB_FERRET
+USER_DB_FLAMINGO
 ├── RAW
 │   └── CITY_WEATHER                     ← ETL destination — daily UPSERT
 ├── ADHOC
@@ -228,7 +208,8 @@ USER_DB_FERRET
 | `UPPER_BOUND` | FLOAT | 95% confidence interval upper limit |
 
 ---
-## Model Evaluation Results
+
+## 📊 Model Evaluation Results
 
 Query to retrieve the latest clean metrics with no duplicates:
 
@@ -262,7 +243,7 @@ ORDER BY SERIES, ERROR_METRIC;
 
 ---
 
-## Screenshots
+## 🖼️ Screenshots
 
 ### Airflow — Both DAGs Running
 ![Airflow DAGs Overview](screenshots/airflow_dags_overview.png)
@@ -278,13 +259,68 @@ ORDER BY SERIES, ERROR_METRIC;
 
 ---
 
+## 🔍 Useful Queries
 
-## Setup Guide
+**Confirm data loaded for all four cities:**
+```sql
+SELECT
+    CITY,
+    MIN(DATE)  AS earliest,
+    MAX(DATE)  AS latest,
+    COUNT(*)   AS total_days
+FROM RAW.CITY_WEATHER
+GROUP BY CITY
+ORDER BY CITY;
+```
+
+**Verify historical and forecast row counts (expect 60 + 7 = 67 per city):**
+```sql
+SELECT
+    CITY,
+    COUNT(CASE WHEN ACTUAL   IS NOT NULL THEN 1 END) AS historical_rows,
+    COUNT(CASE WHEN FORECAST IS NOT NULL THEN 1 END) AS forecast_rows
+FROM ANALYTICS.CITY_WEATHER_FINAL
+GROUP BY CITY
+ORDER BY CITY;
+```
+
+**View the 7-day forecast with confidence bands:**
+```sql
+SELECT *
+FROM ANALYTICS.CITY_WEATHER_FINAL
+WHERE FORECAST IS NOT NULL
+ORDER BY CITY, DATE;
+```
+
+**Weather descriptions alongside raw WMO codes:**
+```sql
+SELECT
+    CITY, DATE, TEMP_MAX, TEMP_MIN,
+    CASE WEATHER_CODE
+        WHEN 0  THEN 'Clear sky'
+        WHEN 1  THEN 'Mainly clear'
+        WHEN 2  THEN 'Partly cloudy'
+        WHEN 3  THEN 'Overcast'
+        WHEN 45 THEN 'Fog'
+        WHEN 61 THEN 'Slight rain'
+        WHEN 63 THEN 'Moderate rain'
+        WHEN 65 THEN 'Heavy rain'
+        WHEN 80 THEN 'Rain showers'
+        WHEN 95 THEN 'Thunderstorm'
+        ELSE 'Code ' || WEATHER_CODE
+    END AS CONDITIONS
+FROM RAW.CITY_WEATHER
+ORDER BY DATE DESC;
+```
+
+---
+
+## 🛠️ Setup Guide
 
 ### Prerequisites
 
 - Apache Airflow 2.10+ with `apache-airflow-providers-snowflake`
-- Snowflake account with `TRAINING_ROLE`, warehouse `FERRET_QUERY_WH`, and ML Preview features enabled
+- Snowflake account with `TRAINING_ROLE`, warehouse `FLAMINGO_QUERY_WH`, and ML Preview features enabled
 - Python 3.10+
 
 ### Step 1 — Run Snowflake DDL
@@ -299,9 +335,9 @@ Go to **Admin → Connections** and add:
 |-------|-------|
 | Connection ID | `snowflake_conn` |
 | Type | Snowflake |
-| Database | `USER_DB_FERRET` |
+| Database | `USER_DB_FLAMINGO` |
 | Schema | `RAW` |
-| Warehouse | `FERRET_QUERY_WH` |
+| Warehouse | `FLAMINGO_QUERY_WH` |
 | Role | `TRAINING_ROLE` |
 
 ### Step 3 — Create Airflow Variable
@@ -318,7 +354,7 @@ Copy `weather_etl_pipeline.py` and `weather_prediction.py` into your Airflow `da
 
 ---
 
-## Design Decisions
+## 💡 Design Decisions
 
 **MERGE over DELETE + INSERT** — the UPSERT strategy makes every pipeline run idempotent. Running it twice on the same day produces the same table state as running it once. A delete-then-insert approach creates a brief window of data absence on every execution.
 
@@ -330,18 +366,17 @@ Copy `weather_etl_pipeline.py` and `weather_prediction.py` into your Airflow `da
 
 ---
 
-## Lessons Learned
+## 📚 Lessons Learned
 
 A 60-day training window produces realistic MAE values but underperforms on confidence interval calibration. The `COVERAGE_INTERVAL` metric climbs toward 0.95 as more history accumulates — a 365-day rolling window would significantly improve forecast reliability in production.
 
 The `MAPE` metric is unreliable for cities with temperatures near 0°C in winter and should be excluded from any automated reporting dashboard. `MAE` and `SMAPE` are mathematically stable alternatives that produce meaningful values regardless of the temperature scale or season.
 
-Airflow's `@task` decorator, combined with a loop over a JSON variable, demonstrates a clean configuration-driven pattern for building pipelines. Adding new cities, changing metrics, or adjusting the lookback window are all one-line configuration changes rather than code edits.
+Airflow's `@task` decorator combined with a loop over a JSON variable demonstrates a clean configuration-driven pattern for building pipelines. Adding new cities, changing metrics, or adjusting the lookback window are all one-line configuration changes rather than code edits.
+
 
 ---
-
 
 <p align="center">
   Apache Airflow &nbsp;·&nbsp; Snowflake ML &nbsp;·&nbsp; Open-Meteo API &nbsp;·&nbsp; Python
 </p>
-
