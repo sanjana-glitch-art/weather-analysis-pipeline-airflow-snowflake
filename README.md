@@ -1,4 +1,4 @@
-# Weather Analytics Lab 2 — End-to-End ELT Pipeline
+# Weather Analytics - End-to-End ELT Pipeline
 
 ### Powered by · Snowflake · Apache Airflow · dbt · Preset · Open-Meteo API · ML Forecasting
 
@@ -15,9 +15,9 @@
 - [Cities Tracked](#cities-tracked)
 - [Project Structure](#project-structure)
 - [Pipeline Details](#pipeline-details)
-- [Pipeline 1 — Weather ETL DAG](#pipeline-1--weather-etl-dag)
-- [Pipeline 2 — TrainPredict DAG](#pipeline-2--trainpredict-dag)
-- [Pipeline 3 — WeatherData DBT DAG](#pipeline-3--weatherdata-dbt-dag)
+- [Pipeline 1 - Weather ETL DAG](#pipeline-1--weather-etl-dag)
+- [Pipeline 2 - TrainPredict DAG](#pipeline-2--trainpredict-dag)
+- [Pipeline 3 - WeatherData DBT DAG](#pipeline-3--weatherdata-dbt-dag)
 - [dbt Models](#dbt-models)
 - [dbt Tests & Snapshot](#dbt-tests--snapshot)
 - [Snowflake Schema & Tables](#snowflake-schema--tables)
@@ -34,14 +34,14 @@
 
 This project builds a **fully automated end-to-end weather analytics pipeline** using the ELT pattern:
 
-It ingests 60 days of real historical weather data from four US cities into Snowflake, uses **dbt** to run analytical transformations on the raw data (moving averages, temperature anomalies, rolling precipitation, and dry spell tracking), schedules all dbt work through **Apache Airflow**, and visualises the insights in a live **Preset dashboard** — all running on a fully automated daily schedule.
+It ingests 60 days of real historical weather data from four US cities into Snowflake, uses **dbt** to run analytical transformations on the raw data (moving averages, temperature anomalies, rolling precipitation, and dry spell tracking), schedules all dbt work through **Apache Airflow**, and visualises the insights in a live **Preset dashboard** - all running on a fully automated daily schedule.
 
 A bonus **ML forecasting pipeline** also runs daily, training a native Snowflake ML model and generating a 7-day temperature forecast per city.
 
 Three DAGs handle the three stages of work in sequence:
-- **02:30 UTC** — ETL: fetch and load raw weather data into Snowflake
-- **03:30 UTC** — TrainPredict: train Snowflake ML model and generate 7-day forecast
-- **04:30 UTC** — WeatherData_DBT: run dbt models, tests, and snapshots on the raw data
+- **02:30 UTC** - ETL: fetch and load raw weather data into Snowflake
+- **03:30 UTC** - TrainPredict: train Snowflake ML model and generate 7-day forecast
+- **04:30 UTC** - WeatherData_DBT: run dbt models, tests, and snapshots on the raw data
 
 ---
 
@@ -122,15 +122,15 @@ Forecast and historical data are combined using UNION ALL to create the final an
 
 ### RAW.CITY_WEATHER
 
-| Column | Type | Description |
-|--------|------|------------|
-| CITY | STRING | City name |
-| DATE | DATE | Observation date |
-| TEMP_MAX | FLOAT | Max temperature |
-| TEMP_MIN | FLOAT | Min temperature |
-| PRECIPITATION | FLOAT | Rainfall |
-| WIND_SPEED | FLOAT | Wind speed |
-| WEATHER_CODE | INT | Weather condition |
+    | Column | Type | Description |
+    |--------|------|------------|
+    | CITY | STRING | City name |
+    | DATE | DATE | Observation date |
+    | TEMP_MAX | FLOAT | Max temperature |
+    | TEMP_MIN | FLOAT | Min temperature |
+    | PRECIPITATION | FLOAT | Rainfall |
+    | WIND_SPEED | FLOAT | Wind speed |
+    | WEATHER_CODE | INT | Weather condition |
 
 Primary Key: (CITY, DATE)
 
@@ -138,25 +138,25 @@ Primary Key: (CITY, DATE)
 
 ### ANALYTICS.CITY_WEATHER_FINAL
 
-| Column | Type | Description |
-|--------|------|------------|
-| CITY | STRING |
-| DATE | DATE |
-| ACTUAL | FLOAT |
-| FORECAST | FLOAT |
-| LOWER_BOUND | FLOAT |
-| UPPER_BOUND | FLOAT |
+    | Column | Type | Description |
+    |--------|------|------------|
+    | CITY | STRING |
+    | DATE | DATE |
+    | ACTUAL | FLOAT |
+    | FORECAST | FLOAT |
+    | LOWER_BOUND | FLOAT |
+    | UPPER_BOUND | FLOAT |
 
 ---
 
 ## Cities Tracked
 
-| City | Latitude | Longitude | State |
-|------|----------|-----------|-------|
-| Miami | 25.7617 | -80.1918 | Florida |
-| Newport Beach | 33.6189 | -117.9289 | California |
-| Seattle | 47.6062 | -122.3321 | Washington |
-| Boston | 42.3601 | -71.0589 | Massachusetts |
+    | City | Latitude | Longitude | State |
+    |------|----------|-----------|-------|
+    | Miami | 25.7617 | -80.1918 | Florida |
+    | Newport Beach | 33.6189 | -117.9289 | California |
+    | Seattle | 47.6062 | -122.3321 | Washington |
+    | Boston | 42.3601 | -71.0589 | Massachusetts |
 
 ---
 
@@ -168,9 +168,9 @@ weather-forecasting-airflow-snowflake/
 ├── README.md
 │
 ├── dags/
-│   ├── weather_etl_pipeline.py     # DAG 1 — ETL: extract, transform, load
-│   ├── weather_prediction.py       # DAG 2 — ML: train model, generate forecast
-│   └── weather_dbt_dag.py          # DAG 3 — ELT: dbt run, test, snapshot
+│   ├── weather_etl_pipeline.py     # DAG 1 - ETL: extract, transform, load
+│   ├── weather_prediction.py       # DAG 2 - ML: train model, generate forecast
+│   └── weather_dbt_dag.py          # DAG 3 - ELT: dbt run, test, snapshot
 │
 └── dbt/
     ├── dbt_project.yml             # dbt project config
@@ -190,13 +190,13 @@ weather-forecasting-airflow-snowflake/
 
 ## Pipeline Details
 
-| Pipeline | DAG Name | Schedule | Description |
-|----------|----------|----------|------------|
-| Pipeline 1 | WeatherData_ETL | 02:30 UTC (Daily) | Extracts 60-day weather data from Open-Meteo API, transforms JSON, and loads into Snowflake RAW schema using MERGE (idempotent). |
-| Pipeline 2 | TrainPredict | 03:30 UTC (Daily) | Trains Snowflake ML Forecast model and generates 7-day temperature predictions with confidence intervals. |
-| Pipeline 3 | WeatherData_DBT | 04:30 UTC (Daily) | Runs dbt models, tests, and snapshots to transform raw data into analytics-ready tables. |
+    | Pipeline | DAG Name | Schedule | Description |
+    |----------|----------|----------|------------|
+    | Pipeline 1 | WeatherData_ETL | 02:30 UTC (Daily) | Extracts 60-day weather data from Open-Meteo API, transforms JSON, and loads into Snowflake RAW schema using MERGE (idempotent). |
+    | Pipeline 2 | TrainPredict | 03:30 UTC (Daily) | Trains Snowflake ML Forecast model and generates 7-day temperature predictions with confidence intervals. |
+    | Pipeline 3 | WeatherData_DBT | 04:30 UTC (Daily) | Runs dbt models, tests, and snapshots to transform raw data into analytics-ready tables. |
 
-## Pipeline 1 — Weather ETL DAG
+## Pipeline 1 - Weather ETL DAG
 
 **DAG ID:** `WeatherData_ETL`
 **Schedule:** `30 2 * * *` (Daily at 02:30 UTC)
@@ -239,7 +239,7 @@ params = {
 
 #### 3. `load(records, target_table)`
 - Creates a **temp staging table** and inserts records into it
-- Runs a **MERGE (UPSERT)** against `RAW.CITY_WEATHER` — prevents duplicates on re-runs
+- Runs a **MERGE (UPSERT)** against `RAW.CITY_WEATHER` - prevents duplicates on re-runs
 - Wrapped in **SQL transaction** with `BEGIN / COMMIT / ROLLBACK` inside `try/except` for full idempotency
 
 ```sql
@@ -258,15 +258,15 @@ VALUES (s.CITY, s.LATITUDE)
 
 ### Airflow Connections & Variables Used
 
-Snowflake credentials are stored in an **Airflow Connection** (`snowflake_conn`) — no hardcoded passwords.
+Snowflake credentials are stored in an **Airflow Connection** (`snowflake_conn`) - no hardcoded passwords.
 
 ### Connections
 
 Configure in **Admin → Connections:**
 
-| Conn ID | Type | Description |
-|---------|------|-------------|
-| `snowflake_conn` | Snowflake | Points to `USER_DB_FERRET`, schema `RAW` |
+    | Conn ID | Type | Description |
+    |---------|------|-------------|
+    | `snowflake_conn` | Snowflake | Points to `USER_DB_FERRET`, schema `RAW` |
 
 <img width="1710" height="949" alt="image" src="https://github.com/user-attachments/assets/47ce4c20-2706-4336-9fa2-e6556adc48d4" />
 
@@ -275,18 +275,18 @@ Configure in **Admin → Connections:**
 
 Configure in **Admin → Variables:**
 
-| Key | Type | Description |
-|-----|------|-------------|
-| `weather_cities` | JSON | List of city objects with `city`, `lat`, `lon` |
+    | Key | Type | Description |
+    |-----|------|-------------|
+    | `weather_cities` | JSON | List of city objects with `city`, `lat`, `lon` |
 
 <img width="1710" height="949" alt="image" src="https://github.com/user-attachments/assets/9f98c63a-f52f-40d4-947d-d55415d8dba1" />
 
 ---
 
-## Pipeline 2 — TrainPredict DAG
+## Pipeline 2 - TrainPredict DAG
 
 **DAG ID:** `TrainPredict`
-**Schedule:** `30 3 * * *` (Daily at 03:30 UTC — runs after ETL)
+**Schedule:** `30 3 * * *` (Daily at 03:30 UTC - runs after ETL)
 **File:** `dags/weather_prediction.py`
 
 <img width="1246" height="662" alt="image" src="https://github.com/user-attachments/assets/87b6a705-214b-4b8c-8282-e6402605d098" />
@@ -334,10 +334,10 @@ FROM ADHOC.CITY_WEATHER_FORECAST
 
 ---
 
-## Pipeline 3 — WeatherData DBT DAG
+## Pipeline 3 - WeatherData DBT DAG
 
 **DAG ID:** `WeatherData_DBT`
-**Schedule:** `30 4 * * *` (Daily at 04:30 UTC — runs after TrainPredict)
+**Schedule:** `30 4 * * *` (Daily at 04:30 UTC - runs after TrainPredict)
 **File:** `dags/weather_dbt_dag.py`
 
 <img width="1242" height="748" alt="image" src="https://github.com/user-attachments/assets/548827e2-7368-4515-a1a1-6601f6deeaaa" />
@@ -362,15 +362,15 @@ dbt_run = BashOperator(
 
 **Environment variables passed to dbt:**
 
-| Variable | Source |
-|----------|--------|
-| `DBT_USER` | `conn.login` |
-| `DBT_PASSWORD` | `conn.password` |
-| `DBT_ACCOUNT` | `conn.extra_dejson.get("account")` |
-| `DBT_DATABASE` | `conn.extra_dejson.get("database")` |
-| `DBT_ROLE` | `conn.extra_dejson.get("role")` |
-| `DBT_WAREHOUSE` | `conn.extra_dejson.get("warehouse")` |
-| `DBT_TYPE` | `"snowflake"` |
+    | Variable | Source |
+    |----------|--------|
+    | `DBT_USER` | `conn.login` |
+    | `DBT_PASSWORD` | `conn.password` |
+    | `DBT_ACCOUNT` | `conn.extra_dejson.get("account")` |
+    | `DBT_DATABASE` | `conn.extra_dejson.get("database")` |
+    | `DBT_ROLE` | `conn.extra_dejson.get("role")` |
+    | `DBT_WAREHOUSE` | `conn.extra_dejson.get("warehouse")` |
+    | `DBT_TYPE` | `"snowflake"` |
 
 ---
 
@@ -391,7 +391,7 @@ dbt snapshots:
 <img width="1246" height="646" alt="image" src="https://github.com/user-attachments/assets/29ca685d-f028-41fd-af5e-d7d398ddec7b" />
 
 
-### `moving_avg` — 7-Day Rolling Temperature Averages
+### `moving_avg` - 7-Day Rolling Temperature Averages
 
 **Source:** `RAW.CITY_WEATHER`
 **Output table:** `DBT.MOVING_AVG` (436 rows)
@@ -406,25 +406,25 @@ AVG(TEMP_MAX) OVER (
 ) AS TEMP_MAX_7DAY_AVG
 ```
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `CITY` | VARCHAR | City name |
-| `DATE` | DATE | Observation date |
-| `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
-| `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
-| `TEMP_MEAN` | FLOAT | Daily mean temperature (°C) |
-| `PRECIPITATION_MM` | FLOAT | Daily precipitation (mm) |
-| `WIND_SPEED_MAX_KMH` | FLOAT | Max wind speed (km/h) |
-| `TEMP_MAX_7DAY_AVG` | FLOAT | 7-day rolling avg of TEMP_MAX |
-| `TEMP_MIN_7DAY_AVG` | FLOAT | 7-day rolling avg of TEMP_MIN |
-| `TEMP_MEAN_7DAY_AVG` | FLOAT | 7-day rolling avg of TEMP_MEAN |
-| `ROLLING_WINDOW_DAYS` | DECIMAL | Days included in the rolling window |
+    | Column | Type | Description |
+    |--------|------|-------------|
+    | `CITY` | VARCHAR | City name |
+    | `DATE` | DATE | Observation date |
+    | `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
+    | `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
+    | `TEMP_MEAN` | FLOAT | Daily mean temperature (°C) |
+    | `PRECIPITATION_MM` | FLOAT | Daily precipitation (mm) |
+    | `WIND_SPEED_MAX_KMH` | FLOAT | Max wind speed (km/h) |
+    | `TEMP_MAX_7DAY_AVG` | FLOAT | 7-day rolling avg of TEMP_MAX |
+    | `TEMP_MIN_7DAY_AVG` | FLOAT | 7-day rolling avg of TEMP_MIN |
+    | `TEMP_MEAN_7DAY_AVG` | FLOAT | 7-day rolling avg of TEMP_MEAN |
+    | `ROLLING_WINDOW_DAYS` | DECIMAL | Days included in the rolling window |
 
 <img width="1248" height="690" alt="image" src="https://github.com/user-attachments/assets/59613b07-b031-4244-9212-a7970f1ef5ee" />
 
 ---
 
-### `temp_anomaly` — Temperature Anomaly vs City Historical Average
+### `temp_anomaly` - Temperature Anomaly vs City Historical Average
 
 **Source:** `RAW.CITY_WEATHER`
 **Output table:** `DBT.TEMP_ANOMALY` (436 rows)
@@ -442,68 +442,68 @@ city_averages AS (
 )
 ```
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `CITY` | VARCHAR | City name |
-| `DATE` | DATE | Observation date |
-| `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
-| `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
-| `TEMP_MEAN` | FLOAT | Daily mean temperature (°C) |
-| `AVG_TEMP_MAX` | FLOAT | City's overall historical avg TEMP_MAX |
-| `AVG_TEMP_MIN` | FLOAT | City's overall historical avg TEMP_MIN |
-| `AVG_TEMP_MEAN` | FLOAT | City's overall historical avg TEMP_MEAN |
-| `TEMP_MAX_ANOMALY` | FLOAT | Deviation of TEMP_MAX from city average |
-| `TEMP_MIN_ANOMALY` | FLOAT | Deviation of TEMP_MIN from city average |
-| `TEMP_MEAN_ANOMALY` | FLOAT | Deviation of TEMP_MEAN from city average |
-| `ANOMALY_CATEGORY` | VARCHAR | Above Normal / Below Normal / Near Normal |
+    | Column | Type | Description |
+    |--------|------|-------------|
+    | `CITY` | VARCHAR | City name |
+    | `DATE` | DATE | Observation date |
+    | `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
+    | `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
+    | `TEMP_MEAN` | FLOAT | Daily mean temperature (°C) |
+    | `AVG_TEMP_MAX` | FLOAT | City's overall historical avg TEMP_MAX |
+    | `AVG_TEMP_MIN` | FLOAT | City's overall historical avg TEMP_MIN |
+    | `AVG_TEMP_MEAN` | FLOAT | City's overall historical avg TEMP_MEAN |
+    | `TEMP_MAX_ANOMALY` | FLOAT | Deviation of TEMP_MAX from city average |
+    | `TEMP_MIN_ANOMALY` | FLOAT | Deviation of TEMP_MIN from city average |
+    | `TEMP_MEAN_ANOMALY` | FLOAT | Deviation of TEMP_MEAN from city average |
+    | `ANOMALY_CATEGORY` | VARCHAR | Above Normal / Below Normal / Near Normal |
 
 <img width="1234" height="686" alt="image" src="https://github.com/user-attachments/assets/ef64e46c-99b1-4639-9645-db7b998a24c1" />
 
 ---
 
-### `rolling_precip` — 7-Day and 30-Day Rolling Precipitation
+### `rolling_precip` - 7-Day and 30-Day Rolling Precipitation
 
 **Source:** `RAW.CITY_WEATHER`
 **Output table:** `DBT.ROLLING_PRECIP` (432 rows)
 
 Calculates both a 7-day and 30-day rolling sum of precipitation per city, plus a count of rainy days in the past 7 days. Labels each 7-day window as `Wet Period` (>25mm), `Dry Period` (0mm), or `Normal Period`.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `CITY` | VARCHAR | City name |
-| `DATE` | DATE | Observation date |
-| `PRECIPITATION_MM` | FLOAT | Daily precipitation (mm) |
-| `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
-| `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
-| `WEATHER_CODE` | DECIMAL | WMO weather code |
-| `IS_RAIN_DAY` | DECIMAL | 1 if precipitation > 0, else 0 |
-| `PRECIP_7DAY_ROLLING_SUM` | FLOAT | 7-day rolling total precipitation |
-| `RAIN_DAYS_LAST_7` | DECIMAL | Count of rainy days in the last 7 |
-| `PRECIP_30DAY_ROLLING_SUM` | FLOAT | 30-day rolling total precipitation |
-| `PERIOD_LABEL` | VARCHAR | Wet Period / Normal Period / Dry Period |
+    | Column | Type | Description |
+    |--------|------|-------------|
+    | `CITY` | VARCHAR | City name |
+    | `DATE` | DATE | Observation date |
+    | `PRECIPITATION_MM` | FLOAT | Daily precipitation (mm) |
+    | `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
+    | `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
+    | `WEATHER_CODE` | DECIMAL | WMO weather code |
+    | `IS_RAIN_DAY` | DECIMAL | 1 if precipitation > 0, else 0 |
+    | `PRECIP_7DAY_ROLLING_SUM` | FLOAT | 7-day rolling total precipitation |
+    | `RAIN_DAYS_LAST_7` | DECIMAL | Count of rainy days in the last 7 |
+    | `PRECIP_30DAY_ROLLING_SUM` | FLOAT | 30-day rolling total precipitation |
+    | `PERIOD_LABEL` | VARCHAR | Wet Period / Normal Period / Dry Period |
 
 <img width="1238" height="690" alt="image" src="https://github.com/user-attachments/assets/6dd7e58c-8c22-46b1-97fa-3f4307211986" />
 
 ---
 
-### `dry_spell` — Consecutive Dry Day Counter
+### `dry_spell` - Consecutive Dry Day Counter
 
 **Source:** `RAW.CITY_WEATHER`
 **Output table:** `DBT.DRY_SPELL` (432 rows)
 
 Tracks consecutive dry days (precipitation = 0) per city. Uses a running `SUM(IS_RAIN_DAY)` window to assign a streak group number that increments each time it rains, then counts days within each group using `ROW_NUMBER`. The counter resets to 0 on any rain day. Also computes a running maximum dry spell so far per city.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `CITY` | VARCHAR | City name |
-| `DATE` | DATE | Observation date |
-| `PRECIPITATION_MM` | FLOAT | Daily precipitation (mm) |
-| `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
-| `WEATHER_CODE` | DECIMAL | WMO weather code |
-| `IS_RAIN_DAY` | DECIMAL | 1 if precipitation > 0, else 0 |
-| `DRY_SPELL_DAYS` | DECIMAL | Consecutive dry days up to this date |
-| `DRY_SPELL_LABEL` | VARCHAR | Rain Day / Dry (1-2 days) / Short Dry Spell (3-6 days) / Extended Dry Spell (7+ days) |
-| `MAX_DRY_SPELL_SO_FAR` | DECIMAL | Running maximum dry spell days for this city |
+    | Column | Type | Description |
+    |--------|------|-------------|
+    | `CITY` | VARCHAR | City name |
+    | `DATE` | DATE | Observation date |
+    | `PRECIPITATION_MM` | FLOAT | Daily precipitation (mm) |
+    | `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
+    | `WEATHER_CODE` | DECIMAL | WMO weather code |
+    | `IS_RAIN_DAY` | DECIMAL | 1 if precipitation > 0, else 0 |
+    | `DRY_SPELL_DAYS` | DECIMAL | Consecutive dry days up to this date |
+    | `DRY_SPELL_LABEL` | VARCHAR | Rain Day / Dry (1-2 days) / Short Dry Spell (3-6 days) / Extended Dry Spell (7+ days) |
+    | `MAX_DRY_SPELL_SO_FAR` | DECIMAL | Running maximum dry spell days for this city |
 
 <img width="1236" height="690" alt="image" src="https://github.com/user-attachments/assets/00cc1170-bbf6-492a-a88a-c3da4fe37031" />
 
@@ -511,7 +511,7 @@ Tracks consecutive dry days (precipitation = 0) per city. Uses a running `SUM(IS
 
 ## dbt Tests & Snapshot
 
-### dbt Tests — 30 Tests, All Pass
+### dbt Tests - 30 Tests, All Pass
 
 Tests are defined in `models/schema.yml` and cover every model. Each model has:
 - `not_null` tests on all key columns
@@ -522,9 +522,9 @@ Tests are defined in `models/schema.yml` and cover every model. Each model has:
 <img width="1244" height="780" alt="image" src="https://github.com/user-attachments/assets/05534086-ab46-4649-b47b-91c36163f9eb" />
 
 
-### dbt Snapshot — SCD Type 2 History
+### dbt Snapshot - SCD Type 2 History
 
-The snapshot `city_weather_snapshot` uses the `timestamp` strategy with `DATE` as the `updated_at` field, writing to `DBT.CITY_WEATHER_SNAPSHOT`. If source data is ever corrected retroactively (e.g. the API revises a historical temperature), the snapshot records both old and new values with `dbt_valid_from` and `dbt_valid_to` timestamps — enabling full historical auditing.
+The snapshot `city_weather_snapshot` uses the `timestamp` strategy with `DATE` as the `updated_at` field, writing to `DBT.CITY_WEATHER_SNAPSHOT`. If source data is ever corrected retroactively (e.g. the API revises a historical temperature), the snapshot records both old and new values with `dbt_valid_from` and `dbt_valid_to` timestamps - enabling full historical auditing.
 
 ```sql
 {% snapshot city_weather_snapshot %}
@@ -574,36 +574,36 @@ USER_DB_FERRET
 
 <img width="3418" height="1016" alt="image" src="https://github.com/user-attachments/assets/6d61dd27-6f51-4a86-b022-16b901765474" />
 
-### `RAW.CITY_WEATHER` — Source Table
+### `RAW.CITY_WEATHER` - Source Table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `CITY` | STRING | City name (part of composite PK) |
-| `LATITUDE` | FLOAT | Geographic latitude |
-| `LONGITUDE` | FLOAT | Geographic longitude |
-| `DATE` | DATE | Observation date (part of composite PK) |
-| `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
-| `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
-| `TEMP_MEAN` | FLOAT | Daily mean temperature (°C) |
-| `PRECIPITATION_MM` | FLOAT | Total daily precipitation (mm) |
-| `WIND_SPEED_MAX_KMH` | FLOAT | Max daily wind speed (km/h) |
-| `WEATHER_CODE` | INTEGER | WMO weather interpretation code |
+    | Column | Type | Description |
+    |--------|------|-------------|
+    | `CITY` | STRING | City name (part of composite PK) |
+    | `LATITUDE` | FLOAT | Geographic latitude |
+    | `LONGITUDE` | FLOAT | Geographic longitude |
+    | `DATE` | DATE | Observation date (part of composite PK) |
+    | `TEMP_MAX` | FLOAT | Daily max temperature (°C) |
+    | `TEMP_MIN` | FLOAT | Daily min temperature (°C) |
+    | `TEMP_MEAN` | FLOAT | Daily mean temperature (°C) |
+    | `PRECIPITATION_MM` | FLOAT | Total daily precipitation (mm) |
+    | `WIND_SPEED_MAX_KMH` | FLOAT | Max daily wind speed (km/h) |
+    | `WEATHER_CODE` | INTEGER | WMO weather interpretation code |
 
-> **Composite Primary Key:** `(CITY, DATE)` — one record per city per day, enforced via MERGE
+> **Composite Primary Key:** `(CITY, DATE)` - one record per city per day, enforced via MERGE
 
-### `DBT.MOVING_AVG` — Verified in Snowflake (436 rows)
+### `DBT.MOVING_AVG` - Verified in Snowflake (436 rows)
 
 <img width="2650" height="1634" alt="image" src="https://github.com/user-attachments/assets/2c3f11c3-2a4d-4c81-b92d-7d39b7290d0c" />
 
-### `DBT.TEMP_ANOMALY` — Verified in Snowflake (436 rows)
+### `DBT.TEMP_ANOMALY` - Verified in Snowflake (436 rows)
 
 <img width="2646" height="1662" alt="image" src="https://github.com/user-attachments/assets/b4897f93-59fb-4622-aeb6-427028458730" />
 
-### `DBT.ROLLING_PRECIP` — Verified in Snowflake 
+### `DBT.ROLLING_PRECIP` - Verified in Snowflake 
 
 <img width="2648" height="1646" alt="image" src="https://github.com/user-attachments/assets/35a85e46-86b1-43ba-a9a5-30916a0ec61d" />
 
-### `DBT.DRY_SPELL` — Verified in Snowflake 
+### `DBT.DRY_SPELL` - Verified in Snowflake 
 
 <img width="2640" height="1648" alt="image" src="https://github.com/user-attachments/assets/c3eb7072-28a5-408f-906c-8a7977f30784" />
 
@@ -631,7 +631,7 @@ docker-compose up -d
 
 All Python dependencies are declared in `docker-compose.yaml` under `_PIP_ADDITIONAL_REQUIREMENTS`.
 
-### Docker Compose — dbt Volume Mount
+### Docker Compose - dbt Volume Mount
 
 The dbt project folder is mirrored into the Airflow container so dbt commands can run inside it:
 
@@ -646,17 +646,17 @@ This is the key step that allows `BashOperator` tasks to call `/home/airflow/.lo
 
 Configure in **Admin → Connections:**
 
-| Conn ID | Type | Description |
-|---------|------|-------------|
-| `snowflake_conn` | Snowflake | Account: `SFEDU02-EAB27764`, Database: `USER_DB_FERRET`, Schema: `RAW`, Role: `TRAINING_ROLE`, Warehouse: `FERRET_QUERY_WH` |
+    | Conn ID | Type | Description |
+    |---------|------|-------------|
+    | `snowflake_conn` | Snowflake | Account: `SFEDU02-EAB27764`, Database: `USER_DB_FERRET`, Schema: `RAW`, Role: `TRAINING_ROLE`, Warehouse: `FERRET_QUERY_WH` |
 
 ### Variables
 
 Configure in **Admin → Variables:**
 
-| Key | Type | Description |
-|-----|------|-------------|
-| `weather_cities` | JSON | List of city objects with `city`, `lat`, `lon` |
+    | Key | Type | Description |
+    |-----|------|-------------|
+    | `weather_cities` | JSON | List of city objects with `city`, `lat`, `lon` |
 
 ### DAG Execution Order
 
@@ -695,40 +695,40 @@ Preset was connected to Snowflake in 3 steps: select Snowflake as the database t
 
 All four dbt output tables were registered as datasets in Preset:
 
-| Dataset | Source Table |
-|---------|-------------|
-| `moving_avg` | `DBT.MOVING_AVG` | 
-| `temp_anomaly` | `DBT.TEMP_ANOMALY` | 
-| `rolling_precip` | `DBT.ROLLING_PRECIP` | 
-| `dry_spell` | `DBT.DRY_SPELL` | 
+    | Dataset | Source Table |
+    |---------|-------------|
+    | `moving_avg` | `DBT.MOVING_AVG` | 
+    | `temp_anomaly` | `DBT.TEMP_ANOMALY` | 
+    | `rolling_precip` | `DBT.ROLLING_PRECIP` | 
+    | `dry_spell` | `DBT.DRY_SPELL` | 
 
-### Dashboard — Page 1: Temperature & Dry Spell Insights
+### Dashboard - Page 1: Temperature & Dry Spell Insights
 
 <img width="1090" height="596" alt="image" src="https://github.com/user-attachments/assets/84a703c4-7587-470a-b74a-f2367a7e70e0" />
 
 
-#### Chart 1 — City Climate Profile Comparison (Temperature, Rainfall, Wind)
+#### Chart 1 - City Climate Profile Comparison (Temperature, Rainfall, Wind)
 **Type:** Radar / spider chart | **Source:** `temp_anomaly`
 
 Plots `AVG_TEMP_MAX`, `AVG_TEMP_MIN`, `AVG_PRECIPITATION_MM`, and `AVG_WIND_SPEED_MAX_KMH` for all four cities on a single radar chart. Miami clearly dominates on temperature. Newport Beach has the highest wind values. Boston and Seattle cluster inward. This chart lets you compare the full climate fingerprint of all four cities in one glance.
 
 <img width="1338" height="800" alt="image" src="https://github.com/user-attachments/assets/6feef695-e8e5-474d-9756-a8163d047dc7" />
 
-#### Chart 2 — 7-Day Rolling Temperature Trends by City
+#### Chart 2 - 7-Day Rolling Temperature Trends by City
 **Type:** Line chart | **Source:** `moving_avg`
 
 Shows the 7-day rolling average of `TEMP_MAX` over time for all four cities from February to April 2026. Miami stays consistently warm (25–28°C), Newport Beach holds steady in the low 20s, while Boston climbs from below -5°C in February to 15°C by April. Seattle shows mild progression through spring. The rolling average removes day-to-day noise and makes the seasonal warming trend clearly visible.
 
 <img width="1334" height="766" alt="image" src="https://github.com/user-attachments/assets/8acf3790-39f7-4f14-b073-6139496f5cbd" />
 
-#### Chart 3 — City Climate Profile: Avg Max vs Min Temperature with Wind Intensity
+#### Chart 3 - City Climate Profile: Avg Max vs Min Temperature with Wind Intensity
 **Type:** Bubble chart | **Source:** `temp_anomaly`
 
 X-axis is average max temperature, Y-axis is average min temperature, and bubble size encodes wind speed. Miami forms a tight warm cluster in the top-right. Newport Beach spreads across the middle-right. Boston and Seattle cluster in the lower-left. This chart shows both the temperature range experienced by each city and how wind intensity varies across that range.
 
 <img width="1326" height="790" alt="image" src="https://github.com/user-attachments/assets/f7393be8-4756-437f-aeea-3bfd25eca314" />
 
-#### Chart 4 — Maximum Dry Spell Achieved Over Time by City
+#### Chart 4 - Maximum Dry Spell Achieved Over Time by City
 **Type:** Line chart | **Source:** `dry_spell`
 
 Tracks the running maximum consecutive dry days per city over the observation period. Newport Beach climbs all the way to **41 consecutive dry days** by early April 2026, reflecting its Southern California climate. Boston, Miami, and Seattle all stay under 15 days. This chart captures drought risk building over time in a way a simple daily counter cannot.
@@ -737,47 +737,47 @@ Tracks the running maximum consecutive dry days per city over the observation pe
 
 ---
 
-### Dashboard — Page 2: Precipitation & Anomaly Insights
+### Dashboard - Page 2: Precipitation & Anomaly Insights
 
 <img width="1100" height="598" alt="image" src="https://github.com/user-attachments/assets/32b1c6cd-b428-44e7-833f-c0f911a4c839" />
 
 
-#### Chart 5 — Avg Temp Comparison by City Current Month
+#### Chart 5 - Avg Temp Comparison by City Current Month
 **Type:** Bar chart (grouped) | **Source:** `moving_avg`
 
 Shows the 7-day rolling average temperature per city grouped by date for the most recent month (April 2026). Miami consistently sits 5–10°C above all other cities. The date-range slider at the bottom allows filtering to any time window, demonstrating the interactive filter capability of the dashboard.
 
 <img width="1230" height="696" alt="image" src="https://github.com/user-attachments/assets/720810bf-9560-4b7c-a923-c8b484738711" />
 
-#### Chart 6 — Temperature Anomaly Heatmap by City
+#### Chart 6 - Temperature Anomaly Heatmap by City
 **Type:** Heatmap | **Source:** `temp_anomaly`
 
-Displays `TEMP_MAX_ANOMALY` per city across the most recent dates. Red cells indicate days warmer than the city's historical average; blue cells indicate cooler days. Boston shows large positive anomalies in early April (20.48°C above average) reflecting a warm spell. Newport Beach stays close to zero — consistent with its mild, stable climate. Filtered by the same date range slider.
+Displays `TEMP_MAX_ANOMALY` per city across the most recent dates. Red cells indicate days warmer than the city's historical average; blue cells indicate cooler days. Boston shows large positive anomalies in early April (20.48°C above average) reflecting a warm spell. Newport Beach stays close to zero - consistent with its mild, stable climate. Filtered by the same date range slider.
 
 <img width="1238" height="672" alt="image" src="https://github.com/user-attachments/assets/81f705b9-5b36-4aa3-b28f-fc9e26e5b7a8" />
 
-#### Chart 7 — Average Rainy Days by City
+#### Chart 7 - Average Rainy Days by City
 **Type:** Bar chart | **Source:** `rolling_precip`
 
 Shows the average number of rainy days in the last 7 days per city. Boston (3.31) and Seattle (3.24) lead, confirming their wetter climates, while Newport Beach (0.56) confirms its dry Southern California character. Simple but immediately readable.
 
 <img width="1326" height="780" alt="image" src="https://github.com/user-attachments/assets/d3314357-9bee-40e9-94bc-e11cd343041c" />
 
-#### Chart 8 — Precipitation vs Temperature Correlation
+#### Chart 8 - Precipitation vs Temperature Correlation
 **Type:** Scatter chart | **Source:** `rolling_precip`
 
-X-axis is 7-day rolling precipitation, Y-axis is daily max temperature. Each point is a city-day observation. Miami stays high on the Y-axis regardless of precipitation. Boston and Seattle show a slight negative slope — more rain tends to coincide with cooler temperatures. Newport Beach dots cluster near zero precipitation across a wide temperature range.
+X-axis is 7-day rolling precipitation, Y-axis is daily max temperature. Each point is a city-day observation. Miami stays high on the Y-axis regardless of precipitation. Boston and Seattle show a slight negative slope - more rain tends to coincide with cooler temperatures. Newport Beach dots cluster near zero precipitation across a wide temperature range.
 
 <img width="1328" height="774" alt="image" src="https://github.com/user-attachments/assets/3ad5b6c9-1dc3-4b35-b970-0227fd07ce4f" />
 
-#### Chart 9 — Distribution of Maximum Temperature by City
+#### Chart 9 - Distribution of Maximum Temperature by City
 **Type:** Box plot | **Source:** `temp_anomaly`
 
 Shows the full temperature distribution (median, IQR, whiskers, outliers) of `TEMP_MAX` for each city. Boston has the widest spread (-13°C to +27°C), reflecting its seasonal variation. Miami is tightly clustered around 24–26°C. Newport Beach shows one high outlier around 32°C. Seattle is narrow and mild.
 
 <img width="1234" height="680" alt="image" src="https://github.com/user-attachments/assets/7c547ce3-4fab-40a1-acf2-a22bb0842cbd" />
 
-#### Chart 10 — Monthly Rainfall & Temperature Comparison by City
+#### Chart 10 - Monthly Rainfall & Temperature Comparison by City
 **Type:** Pivot table with heatmap coloring | **Source:** `rolling_precip`
 
 A pivot table showing `AVG(PRECIPITATION_MM)` and `AVG(TEMP_MAX)` per city per month (Jan–Apr 2026). Green shading highlights high precipitation; red shading highlights high temperature. Newport Beach records near-zero precipitation every month (0.03–0.98mm average) while Boston and Seattle are consistently greener. Temperatures warm visibly from January through April for Boston and Seattle.
@@ -816,18 +816,18 @@ These improvements would help evolve the current system into a more scalable, ro
 
 ## Lessons Learned
 
-1. **dbt in Airflow needs a volume mount** — The single most important setup step is adding `${AIRFLOW_PROJ_DIR:-.}/dbt:/opt/airflow/dbt` to the Docker Compose volumes. Without it, `BashOperator` tasks cannot find the dbt project and fail silently.
+1. **dbt in Airflow needs a volume mount** - The single most important setup step is adding `${AIRFLOW_PROJ_DIR:-.}/dbt:/opt/airflow/dbt` to the Docker Compose volumes. Without it, `BashOperator` tasks cannot find the dbt project and fail silently.
 
-2. **Credentials belong in Airflow Connections, not code** — Using `BaseHook.get_connection('snowflake_conn')` and passing credentials as environment variables to dbt keeps the DAG code clean and secrets out of version control entirely.
+2. **Credentials belong in Airflow Connections, not code** - Using `BaseHook.get_connection('snowflake_conn')` and passing credentials as environment variables to dbt keeps the DAG code clean and secrets out of version control entirely.
 
-3. **MERGE over INSERT for idempotency** — The ETL pipeline uses a temp staging table + MERGE so daily re-runs never create duplicate records. The whole load is wrapped in `BEGIN / COMMIT / ROLLBACK` so a partial failure leaves no dirty data.
+3. **MERGE over INSERT for idempotency** - The ETL pipeline uses a temp staging table + MERGE so daily re-runs never create duplicate records. The whole load is wrapped in `BEGIN / COMMIT / ROLLBACK` so a partial failure leaves no dirty data.
 
-4. **Window functions belong in dbt, not in raw SQL** — Moving the `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW` window logic, streak-group calculations, and anomaly joins into dbt models makes them version-controlled, testable, and reusable by any BI tool — not buried in a one-off query.
+4. **Window functions belong in dbt, not in raw SQL** - Moving the `ROWS BETWEEN 6 PRECEDING AND CURRENT ROW` window logic, streak-group calculations, and anomaly joins into dbt models makes them version-controlled, testable, and reusable by any BI tool - not buried in a one-off query.
 
-5. **DAG scheduling order matters** — `WeatherData_ETL` at 02:30 → `TrainPredict` at 03:30 → `WeatherData_DBT` at 04:30 ensures fresh raw data is always available before ML training and dbt transformations run.
+5. **DAG scheduling order matters** - `WeatherData_ETL` at 02:30 → `TrainPredict` at 03:30 → `WeatherData_DBT` at 04:30 ensures fresh raw data is always available before ML training and dbt transformations run.
 
-6. **dbt tests catch problems before Preset does** — Running 30 `not_null` and `accepted_values` tests in the pipeline means data quality issues surface in the Airflow UI as task failures, not as confusing blank charts in the dashboard.
+6. **dbt tests catch problems before Preset does** - Running 30 `not_null` and `accepted_values` tests in the pipeline means data quality issues surface in the Airflow UI as task failures, not as confusing blank charts in the dashboard.
 
-7. **Snapshots enable audit trails for free** — The `city_weather_snapshot` SCD Type 2 snapshot means that if the Open-Meteo API ever corrects a past temperature, both the old and new values are preserved with timestamps — no manual audit table needed.
+7. **Snapshots enable audit trails for free** - The `city_weather_snapshot` SCD Type 2 snapshot means that if the Open-Meteo API ever corrects a past temperature, both the old and new values are preserved with timestamps - no manual audit table needed.
 
 ---
